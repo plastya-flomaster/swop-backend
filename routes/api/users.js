@@ -40,9 +40,55 @@ router.post('/register', (req, res) => {
                         if (err) throw err;
                         newUser.password = hash;
                         newUser.save().then(user => res.json(user))
-                        .catch(err => console.log(err));
+                            .catch(err => console.log(err));
                     });
                 });
             }
         });
 });
+
+//@route POST api/users/login
+//@desc Login user and return JWT token
+//@access Public
+
+router.post('/login', (req, res) => {
+
+    //form validation
+    const { errors, isValid } = validateRegisterInput(req.body);
+
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
+    const email = req.body.email;
+    const password = req.body.password;
+
+    User.findOne({ email }).then((user) => {
+        if (!user) {
+            return res.status(404).json({ emailNotFound: 'Email не найден!' });
+        }
+
+        bcrypt.compare(password, user.password).then((isMatch) => {
+            if (isMatch) {
+                const payload = {
+                    id: user.id,
+                    name: user.name
+                };
+
+                //signing token
+                jwt.sign(payload, keys.secretOrKey, {
+                    expiresIn: 31556926 //lasts 1 year
+                }, (err, token) => {
+                    res.json({
+                        success: true,
+                        token: 'Bearer' + token
+                    });
+                });
+            } else {
+                return res.status(400).json({ passwordIncorrect: 'Неверный пароль!' });
+            }
+        });
+    });
+});
+
+module.exports = router;
