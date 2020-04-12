@@ -36,7 +36,7 @@ router.post('/register', (req, res) => {
                 });
 
                 bcrypt.genSalt(10, (err, salt) => {
-                    bcrypt.hash(newUser.password, salt, (err, salt) => {
+                    bcrypt.hash(newUser.password, salt, (err, hash) => {
                         if (err) throw err;
                         newUser.password = hash;
                         newUser.save().then(user => res.json(user))
@@ -52,9 +52,9 @@ router.post('/register', (req, res) => {
 //@access Public
 
 router.post('/login', (req, res) => {
-
+   
     //form validation
-    const { errors, isValid } = validateRegisterInput(req.body);
+    const { errors, isValid } = validateLoginInput(req.body);
 
     if (!isValid) {
         return res.status(400).json(errors);
