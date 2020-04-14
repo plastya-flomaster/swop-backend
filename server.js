@@ -7,6 +7,8 @@ const users = require('./routes/api/users');
 
 const app = express();
 
+const domain =  "http://localhost:8080";
+
 //bodyparser midware
 app.use(
     bodyParser.urlencoded({
@@ -14,6 +16,12 @@ app.use(
     })
 );
 app.use(bodyParser.json());
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", domain); 
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 
 //config for DB
 const db = require('./config/keys').mongoURI;

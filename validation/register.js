@@ -16,7 +16,7 @@ module.exports = function validateRegisterInput(data) {
     //convert empty fields to an empty strings
     data.name = checkField(data.name);
     data.email = checkField(data.email);
-    data.passemail = checkField(data.passemail);
+    data.password = checkField(data.password);
     data.date = checkField(data.date);
 
     //name check
@@ -26,19 +26,19 @@ module.exports = function validateRegisterInput(data) {
 
     //email check
     if (Validator.isEmpty(data.email)) {
-        errors.email = 'Поле \'Email\' Обязательно';
+        errors.email = 'Поле \'Email\' обязательно';
     } else if (!Validator.isEmail(data.email)) {
-        errors.email = 'Поле \'Email\' некорреpassword';
+        errors.email = 'Поле \'Email\' некорректно';
     }
 
     //password check
     if (Validator.isEmpty(data.password)) {
-        errors.password = 'Поле \'Пароль\' Обязательно';
+        errors.password = 'Поле \'Пароль\' обязательно';
     }
 
     //password confirm check
     if (Validator.isEmpty(data.confirmPassword)) {
-        errors.confirmPassword = 'Поле \'Подтвердите пароль\' Обязательно';
+        errors.confirmPassword = 'Поле \'Подтвердите пароль\' обязательно';
     }
 
     //check for password length
@@ -47,7 +47,7 @@ module.exports = function validateRegisterInput(data) {
     }
     //check for matching password's fields
     if (!Validator.equals(data.password, data.confirmPassword)) {
-        errors.confirmPassword = 'Пароль должны совпадать';
+        errors.confirmPassword = 'Пароли должны совпадать';
     }
 
     return {
