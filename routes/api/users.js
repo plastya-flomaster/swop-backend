@@ -66,7 +66,7 @@ router.post('/login', (req, res) => {
 
     User.findOne({ email }).then((user) => {
         if (!user) {
-            return res.status(404).json({ emailNotFound: 'Email не найден!' });
+            return res.status(404).json({ email: 'Пользователь не найден' });
         }
 
         bcrypt.compare(password, user.password).then((isMatch) => {
@@ -86,7 +86,7 @@ router.post('/login', (req, res) => {
                     });
                 });
             } else {
-                return res.status(400).json({ passwordIncorrect: 'Неверный пароль!' });
+                return res.status(400).json({ password: 'Неверный пароль!' });
             }
         });
     });
