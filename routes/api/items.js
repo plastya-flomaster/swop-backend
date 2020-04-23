@@ -1,25 +1,24 @@
 const express = require('express');
 const router = express.Router();
 
-const Items = require('../../Models/Items');
+const items = require('../../controllers/items.controller');
 
-//@route GET api/items/getItems
+//создаем нового 
+router.post('/:id', items.create);
+
+//@route GET api/items/:id
 //@desc Loads all files into items
 //@access Public
-router.get('/items/:id', async (req, res) => {
-    const userId = req.params.id;
-    try {
-        const items = await Items.findOne({ userId });
+router.get('/:id', items.getAllMine);
 
-        if (!items) {
-            return res.status(400).send('Пока у вас нет товаров, чтобы обменяться! Добавьте новый товар!');
-        }
-         return res.status(200).send(items.items);
-    } catch (err) {
-        return res.status(500).send(err);
-    }
-});
+//@route GET api/items/add/:id&:itemId
+//@desc Добавляет новый товар до нового состояния
+//@access Public
+router.put('/add/:id', items.update);
 
+//плучаем все товары на которые можно поменяться
+router.get('/cards/:id', items.findAllActive);
 
+router.post('/:id/edit/:itemId', items.updateItem);
 
 module.exports = router;

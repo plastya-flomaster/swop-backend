@@ -1,94 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const keys = require('../../config/keys');
 
-//load input validation
-const validateRegisterInput = require('../../validation/register');
-const validateLoginInput = require('../../validation/login');
-
-//loading user model
-const User = require('../../Models/User');
-
+const user = require('../../controllers/user.controller');
 
 //@route POST api/users/register
 //@desc Register user
 //@access Public
-
-router.post('/register', (req, res) => {
-
-    //form validation
-    const { errors, isValid } = validateRegisterInput(req.body);
-    
-    if (!isValid) {
-        return res.status(400).json(errors);
-    }
-
-    User.findOne({ email: req.body.email })
-        .then(user => {
-            if (user) {
-                return res.status(400).json({ email: 'Такой Email уже существует' });
-            } else {
-                const newUser = new User({
-                    name: req.body.name,
-                    email: req.body.email,
-                    password: req.body.password
-                });
-
-                bcrypt.genSalt(10, (err, salt) => {
-                    bcrypt.hash(newUser.password, salt, (err, hash) => {
-                        if (err) throw err;
-                        newUser.password = hash;
-                        newUser.save().then(user => res.json(user))
-                            .catch(err => console.log(err));
-                    });
-                });
-            }
-        });
-});
+router.post('/register', user.register);
 
 //@route POST api/users/login
 //@desc Login user and return JWT token
 //@access Public
-router.post('/login', (req, res) => {
-   
-    //form validation
-    const { errors, isValid } = validateLoginInput(req.body);
+router.post('/login', user.login);
 
-    if (!isValid) {
-        return res.status(400).json(errors);
-    }
+//@route PUT api/users/update
+//@desc Обновляет переданные поля для пользователя
+//@access Public
+//пример запроса: api/users/5e9dabcdc84d114cece8c39d/update?name=Настя&contacts[phone]=+79223260399&contacts[instagram]=@plastya
+router.put('/:id/update', user.update);
 
-    const email = req.body.email;
-    const password = req.body.password;
+//@route GET api/users/:id
+//@desc Получает данные пользователя по айди
+//@access Public
+router.get('/:id', user.getInfo);
 
-    User.findOne({ email }).then((user) => {
-        if (!user) {
-            return res.status(404).json({ email: 'Пользователь не найден' });
-        }
-
-        bcrypt.compare(password, user.password).then((isMatch) => {
-            if (isMatch) {
-                const payload = {
-                    id: user.id,
-                    name: user.name
-                };
-
-                //signing token
-                jwt.sign(payload, keys.secretOrKey, {
-                    expiresIn: 31556926 //lasts 1 year
-                }, (err, token) => {
-                    res.json({
-                        success: true,
-                        token: 'Bearer' + token
-                    });
-                });
-            } else {
-                return res.status(400).json({ password: 'Неверный пароль!' });
-            }
-        });
-    });
-});
+//@route GET api/users/:id
+//@desc Удаляет пользователя по айди
+//@access Public
+router.delete('/:id', user.delete);
 
 module.exports = router;
