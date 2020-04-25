@@ -58,8 +58,7 @@ exports.login = (req, res) => {
         bcrypt.compare(password, user.password).then((isMatch) => {
             if (isMatch) {
                 const payload = {
-                    id: user.id,
-                    name: user.name
+                    id: user.id
                 };
 
                 //signing token
@@ -68,7 +67,8 @@ exports.login = (req, res) => {
                 }, (err, token) => {
                     res.json({
                         success: true,
-                        token: 'Bearer' + token
+                        token: 'Bearer' + token,
+                        info: user
                     });
                 });
             } else {
@@ -95,10 +95,13 @@ exports.getInfo = (req, res) => {
 
 //обновляю информацию о пользователе
 exports.update = (req, res) => {
-    const _id = mongoose.Types.ObjectId(req.params.id);
-    const update = req.query;
-    User.updateOne({ _id }, update, { upsert: false })
-        .then(result => { return res.status(200).send('ok!') })
+    const _id = req.params.id; 
+    const update = req.query
+
+    
+    User.updateOne({ _id }, update)
+        .then(() => User.findOne({ _id}))
+        .then(result => { return res.status(200).send(result)})
         .catch(err => res.status(500).send(err));
 }
 

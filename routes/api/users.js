@@ -13,7 +13,7 @@ router.post('/register', user.register);
 //@access Public
 router.post('/login', user.login);
 
-//@route PUT api/users/update
+//@route PUT api/users/:id/update
 //@desc Обновляет переданные поля для пользователя
 //@access Public
 //пример запроса: api/users/5e9dabcdc84d114cece8c39d/update?name=Настя&contacts[phone]=+79223260399&contacts[instagram]=@plastya
