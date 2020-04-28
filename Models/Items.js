@@ -8,12 +8,11 @@ const CategorySchema = new Schema({
 
 const ItemSchema = new Schema({
     _id: Schema.Types.ObjectId,
-    name: String,
+    title: String,
     category: { type: Schema.Types.ObjectId, ref: 'category' },
     description: String,
-    types: [{
-        typeId: Number,
-        typeName: String
+    tags: [{
+        tag: String
     }],
     photos: [{
         url: String

@@ -36,12 +36,15 @@ exports.updateItem = (req, res) => {
 
 }
 //добавить новый товар в записи
-exports.update = (req, res) => {
+exports.createNewItem = (req, res) => {
 
+    
     const newItem = {
         _id: mongoose.Types.ObjectId(),
-        ...req.query
+        ...req.body
     }
+    console.log(newItem);
+
     const update = {
         "$push": {
             "items": newItem
@@ -57,7 +60,7 @@ exports.update = (req, res) => {
             if (!item)
                 return res.status(404).send('невозможно добавить товар. пользователя нет!');
             return res.status(200).send(item);
-        }).catch(err => { return res.status(500).send('неизвестная ошибка' + err) });
+        }).catch(err => { return res.status(500).send('Ошибка: ' + err) });
 
 };
 

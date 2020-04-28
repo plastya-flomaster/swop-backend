@@ -2,12 +2,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys = require('../config/keys');
 const mongoose = require('mongoose');
+
 //load input validation
 const validateRegisterInput = require('../validation/register');
 const validateLoginInput = require('../validation/login');
 
 //loading user model
 const User = require('../Models/User');
+const Items = require('../Models/Items');
 
 exports.register = (req, res) => {
     //form validation
@@ -31,8 +33,17 @@ exports.register = (req, res) => {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {
                         if (err) throw err;
                         newUser.password = hash;
-                        newUser.save().then(user => res.json(user))
-                            .catch(err => console.log(err));
+                        newUser.save().then(user => {
+                            const items = new Items({
+                                userId: user._id,
+                                items: []
+                            });
+                            items.save().catch(err => {
+                                return res.status(500).json(err)
+                            })
+                            return res.status(200).json(user)
+                        })
+                            .catch(err => res.status(500).send(err));
                     });
                 });
             }
@@ -58,16 +69,19 @@ exports.login = (req, res) => {
         bcrypt.compare(password, user.password).then((isMatch) => {
             if (isMatch) {
                 const payload = {
-                    id: user.id
+                    _id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    instagram: user.instagram,
+                    phone: user.phone,
                 };
-
                 //signing token
                 jwt.sign(payload, keys.secretOrKey, {
                     expiresIn: 31556926 //lasts 1 year
                 }, (err, token) => {
                     res.json({
                         success: true,
-                        token: 'Bearer' + token,
+                        token: token,
                         info: user
                     });
                 });
@@ -95,22 +109,28 @@ exports.getInfo = (req, res) => {
 
 //обновляю информацию о пользователе
 exports.update = (req, res) => {
-    const _id = req.params.id; 
+    const _id = req.params.id;
     const update = req.query
 
-    
     User.updateOne({ _id }, update)
-        .then(() => User.findOne({ _id}))
-        .then(result => { return res.status(200).send(result)})
+        .then(() => User.findOne({ _id }))
+        .then(result => { return res.status(200).send(result) })
         .catch(err => res.status(500).send(err));
 }
 
 exports.delete = (req, res) => {
     const _id = mongoose.Types.ObjectId(req.params.id);
-    User.findByIdAndDelete(_id).then(user => {
-        if (!user) return res.status(404).send(`Пользователя с id ${_id} не найдено`);
-        else res.status(200).send('Удален!')
-    }).catch(err => res.status(500).send(err));
+    User.findByIdAndDelete(_id)
+        .then(user => {
+            if (!user)
+                return res.status(404).send(`Пользователя с id ${_id} не найдено`);
+            else {
+                Items.findOneAndRemove({ userId: _id })
+                .catch(err => res.status(500).send(err));
+                return res.status(200).send('Удален!');
+
+            }
+        }).catch(err => res.status(500).send(err));
 }
 
 
