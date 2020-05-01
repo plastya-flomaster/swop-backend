@@ -22,7 +22,11 @@ exports.create = async (req, res) => {
 
     return res.status(200).send('likeditems создан');
   } catch (e) {
+<<<<<<< HEAD
     res.status(500).send('Что то пошло не так');
+=======
+    res.status(500).send("Что-то пошло не так");
+>>>>>>> 7039e7d9759049841059ba2e686f9c03505da5c2
   }
 };
 
@@ -88,7 +92,7 @@ exports.addPairs = async (req, res) => {
 
     return res.status(200).send('likedItem добавлен');
   } catch (e) {
-    res.status(500).send('Что то пошло не так');
+    res.status(500).send('Что-то пошло не так');
   }
 };
 
