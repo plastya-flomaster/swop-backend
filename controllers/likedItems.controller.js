@@ -22,11 +22,7 @@ exports.create = async (req, res) => {
 
     return res.status(200).send('likeditems создан');
   } catch (e) {
-<<<<<<< HEAD
-    res.status(500).send('Что то пошло не так');
-=======
-    res.status(500).send("Что-то пошло не так");
->>>>>>> 7039e7d9759049841059ba2e686f9c03505da5c2
+    res.status(500).send('Что-то пошло не так');
   }
 };
 
@@ -96,52 +92,52 @@ exports.addPairs = async (req, res) => {
   }
 };
 
-// exports.search = async (req, res) => {
-//   try {
-//     const userId = req.params.id;
-//     const LikedItemsCollection = await LikedItems.findOne({ userId });
+exports.search = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const LikedItemsCollection = await LikedItems.findOne({ userId });
 
-//     if (!LikedItemsCollection) {
-//       return res.status(400).send("LikedItems не найдена");
-//     }
+    if (!LikedItemsCollection) {
+      return res.status(400).send('LikedItems не найдена');
+    }
 
-//     const pairs = LikedItemsCollection.pairs;
+    const pairs = LikedItemsCollection.pairs;
 
-//     if (!pairs) {
-//       return res.status(400).send("У вас пока нет понравившихся вещей");
-//     }
+    if (!pairs) {
+      return res.status(400).send('У вас пока нет понравившихся вещей');
+    }
 
-//     const otherLikedItems = await LikedItems.find({
-//       "pairs.userId": userId,
-//     });
+    const otherLikedItems = await LikedItems.find({
+      'pairs.userId': userId,
+    });
 
-//     if (!otherLikedItems) {
-//       return res.status(400).send("У вас пока нет совподений");
-//     }
+    if (!otherLikedItems) {
+      return res.status(400).send('У вас пока нет совподений');
+    }
 
-//     let found = [];
+    let found = [];
 
-//     await pairs.map(async (pair) => {
-//       const s = otherLikedItems.find(
-//         (likenItems) => likenItems.userId === pair.userId
-//       );
-//       console.log(s);
+    await pairs.map(async (pair) => {
+      const s = otherLikedItems.find(
+        (likenItems) => likenItems.userId === pair.userId
+      );
+      console.log(s);
 
-//       if (s) {
-//         const d = s.pairs.find((pair) => pair.userId === userId);
-//         console.log(d);
+      if (s) {
+        const d = s.pairs.find((pair) => pair.userId === userId);
+        console.log(d);
 
-//         await d.items.map(async (t) => {
-//           console.log(t);
+        await d.items.map(async (t) => {
+          console.log(t);
 
-//           const a = await Items.findOne({ _id: t });
-//           console.log(a);
-//         });
-//       }
-//     });
+          const a = await Items.findOne({ _id: t });
+          console.log(a);
+        });
+      }
+    });
 
-//     return res.status(200).send("hshs");
-//   } catch (e) {
-//     res.status(500).send("Что то пошло не так");
-//   }
-// };
+    return res.status(200).send('hshs');
+  } catch (e) {
+    res.status(500).send('Что то пошло не так');
+  }
+};
