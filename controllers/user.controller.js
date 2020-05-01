@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 //load input validation
 const validateRegisterInput = require('../validation/register');
 const validateLoginInput = require('../validation/login');
+const validateUserInfo = require('../validation/update');
 
 //loading user model
 const User = require('../Models/User');
@@ -69,11 +70,7 @@ exports.login = (req, res) => {
         bcrypt.compare(password, user.password).then((isMatch) => {
             if (isMatch) {
                 const payload = {
-                    _id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    instagram: user.instagram,
-                    phone: user.phone,
+                    _id: user.id
                 };
                 //signing token
                 jwt.sign(payload, keys.secretOrKey, {
@@ -91,14 +88,15 @@ exports.login = (req, res) => {
         });
     });
 }
+
 //получаю информацию о пользвателе
 exports.getInfo = (req, res) => {
-    const _id = 0;
-    try {
-        _id = mongoose.Types.ObjectId(req.params.id);
-    } catch (err) {
-        return res.status(500).send('Неверный формат id');
-    }
+    const _id = req.params.id
+    // try {
+    //     _id = mongoose.Types.ObjectId(req.params.id);
+    // } catch (err) {
+    //     return res.status(500).send('Неверный формат id');
+    // }
 
     User.findOne({ _id }).then(user => {
         if (!user)
@@ -109,8 +107,16 @@ exports.getInfo = (req, res) => {
 
 //обновляю информацию о пользователе
 exports.update = (req, res) => {
+    
+    const { errors, isValid } = validateUserInfo(req.query);
+
+
+    if(!isValid) {
+        return res.status(400).json(errors);
+    }
+    
     const _id = req.params.id;
-    const update = req.query
+    const update = req.query;
 
     User.updateOne({ _id }, update)
         .then(() => User.findOne({ _id }))
@@ -126,7 +132,7 @@ exports.delete = (req, res) => {
                 return res.status(404).send(`Пользователя с id ${_id} не найдено`);
             else {
                 Items.findOneAndRemove({ userId: _id })
-                .catch(err => res.status(500).send(err));
+                    .catch(err => res.status(500).send(err));
                 return res.status(200).send('Удален!');
 
             }
