@@ -1,6 +1,7 @@
 const LikedItems = require('../Models/LikedItems');
 const Items = require('../Models/Items');
-// const mongoose = require("mongoose");
+const itemsController = require('../controllers/items.controller');
+const mongoose = require('mongoose');
 
 exports.create = async (req, res) => {
   try {
@@ -115,28 +116,43 @@ exports.search = async (req, res) => {
       return res.status(400).send('У вас пока нет совподений');
     }
 
-    let found = [];
+    let allItems = [];
+    const allItemsData = await Items.find();
 
-    await pairs.map(async (pair) => {
-      const s = otherLikedItems.find(
+    allItemsData.map((itemsC) => {
+      allItems.push(...itemsC.items);
+    });
+
+    const found = [];
+
+    pairs.map((pair) => {
+      const otherUser = otherLikedItems.find(
         (likenItems) => likenItems.userId === pair.userId
       );
-      console.log(s);
+      if (otherUser) {
+        const myItems = otherUser.pairs.find((pair) => pair.userId === userId);
 
-      if (s) {
-        const d = s.pairs.find((pair) => pair.userId === userId);
-        console.log(d);
+        let myItemsObj = [];
+        myItems.items.map((itemId) => {
+          const itemObj = allItems.find((item) => String(item._id) === itemId);
+          if (itemObj) myItemsObj.push(itemObj);
+        });
 
-        await d.items.map(async (t) => {
-          console.log(t);
+        yourItemsObj = [];
+        pair.items.map((itemId) => {
+          const itemObj = allItems.find((item) => String(item._id) === itemId);
+          if (itemObj) yourItemsObj.push(itemObj);
+        });
 
-          const a = await Items.findOne({ _id: t });
-          console.log(a);
+        found.push({
+          id: otherUser.userId,
+          myItems: myItemsObj,
+          yourItems: yourItemsObj,
         });
       }
     });
 
-    return res.status(200).send('hshs');
+    return res.status(200).send(found);
   } catch (e) {
     res.status(500).send('Что то пошло не так');
   }
