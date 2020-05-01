@@ -2,11 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const multer = require('multer');
 const cors = require('cors');
 
 const users = require('./routes/api/users');
 const items = require('./routes/api/items');
+
 
 const app = express();
 
@@ -30,13 +30,6 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => { res.json({message: 'hello node its plastya'});
 });
 
-app.use(function(req, res, next) {
-    res.append('Access-Control-Allow-Origin' , domain);
-    res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.append("Access-Control-Allow-Headers", "Origin, Accept,Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
-    res.append('Access-Control-Allow-Credentials', true);
-    next();
-  });
 
 
 
