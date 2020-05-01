@@ -22,6 +22,6 @@ router.post('/edit/:id', items.updateItem);
 
 //@route GET api/items/swap/:id
 //получаем все товары, на которые можно меняться
-router.get('/swap/:id', items.getItemsToSwap)
+router.get('/swap/:id', items.getItemsToSwap);
 
 module.exports = router;
