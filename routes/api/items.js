@@ -16,9 +16,12 @@ router.get('/:id', items.getAllMine);
 //@access Public
 router.post('/add/:id', items.createNewItem);
 
-//плучаем все товары на которые можно поменяться
-router.get('/cards/:id', items.findAllActive);
+//@route GET api/items/edit/:id
+//обновляем сведения о своем товаре
+router.post('/edit/:id', items.updateItem);
 
-router.post('/:id/edit/:itemId', items.updateItem);
+//@route GET api/items/swap/:id
+//получаем все товары, на которые можно меняться
+router.get('/swap/:id', items.getItemsToSwap)
 
 module.exports = router;
