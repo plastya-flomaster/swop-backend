@@ -4,18 +4,25 @@ const mongoose = require('mongoose');
 
 //создать запись в базе вместе с регистрацией юзера
 exports.create = (req, res) => {
-    const userId = req.params.id;
-    Items.findOne({ userId }).then(item => {
-        if (item)
-            return res.status(500).send('товары для такого пользователя уже обозначены');
-    });
+  const userId = req.params.id;
+  Items.findOne({ userId }).then((item) => {
+    if (item)
+      return res
+        .status(500)
+        .send('товары для такого пользователя уже обозначены');
+  });
 
-    const items = new Items({
-        userId,
-        items: []
-    });
+  const items = new Items({
+    userId,
+    items: [],
+  });
 
-    items.save().then(item => res.status(200).json(item)).catch(err => { return res.status(500).send('Ошибка: ' + err) });
+  items
+    .save()
+    .then((item) => res.status(200).json(item))
+    .catch((err) => {
+      return res.status(500).send('Ошибка: ' + err);
+    });
 };
 
 //редактировать определенный товар
@@ -109,15 +116,12 @@ exports.getAllMine = (req, res) => {
 
 exports.getAllMineFinished = (req, res) => {
 
-}
+exports.getAllMineFinished = (req, res) => {};
 // //обновить товар по айди
 // exports.update = (req, res) => {
 //     return res.status(200).send('deleted');
 // }
 //удалить товар по айди
-exports.delete = (req, res) => {
-}
+exports.delete = (req, res) => {};
 //удалить все товары юзера
-exports.deleteAll = (req, res) => {
-
-}
+exports.deleteAll = (req, res) => {};

@@ -1,5 +1,5 @@
-const LikedItems = require("../Models/LikedItems");
-const Items = require("../Models/Items");
+const LikedItems = require('../Models/LikedItems');
+const Items = require('../Models/Items');
 // const mongoose = require("mongoose");
 
 exports.create = async (req, res) => {
@@ -10,7 +10,7 @@ exports.create = async (req, res) => {
     if (collection) {
       return res
         .status(400)
-        .send("LikedItems для такого пользователя уже создан");
+        .send('LikedItems для такого пользователя уже создан');
     }
 
     const newLikedItemsCollection = new LikedItems({
@@ -20,9 +20,9 @@ exports.create = async (req, res) => {
 
     await newLikedItemsCollection.save();
 
-    return res.status(200).send("likeditems создан");
+    return res.status(200).send('likeditems создан');
   } catch (e) {
-    res.status(500).send("Что то пошло не так");
+    res.status(500).send('Что то пошло не так');
   }
 };
 
@@ -35,7 +35,7 @@ exports.addPairs = async (req, res) => {
     if (!LikedItemsCollection) {
       return res
         .status(400)
-        .send("LikedItems для такого пользователя еще не создана");
+        .send('LikedItems для такого пользователя еще не создана');
     }
     // Если у пользователя нет ни одной пары
     if (LikedItemsCollection.pairs.lenght === 0) {
@@ -48,7 +48,7 @@ exports.addPairs = async (req, res) => {
 
       await LikedItems.updateOne({ _id: LikedItemsCollection._id }, { pairs });
 
-      return res.status(200).send("likedItem добавлен");
+      return res.status(200).send('likedItem добавлен');
     }
 
     let idxPair;
@@ -75,7 +75,7 @@ exports.addPairs = async (req, res) => {
 
       await LikedItems.updateOne({ _id: LikedItemsCollection._id }, { pairs });
 
-      return res.status(200).send("likedItem добавлен");
+      return res.status(200).send('likedItem добавлен');
     }
     const LikedItem = {
       userId: otherId,
@@ -86,9 +86,9 @@ exports.addPairs = async (req, res) => {
 
     await LikedItems.updateOne({ _id: LikedItemsCollection._id }, { pairs });
 
-    return res.status(200).send("likedItem добавлен");
+    return res.status(200).send('likedItem добавлен');
   } catch (e) {
-    res.status(500).send("Что то пошло не так");
+    res.status(500).send('Что то пошло не так');
   }
 };
 

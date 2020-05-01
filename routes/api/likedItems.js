@@ -1,12 +1,12 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-const likedItems = require("../../controllers/likedItems.controller");
+const likedItems = require('../../controllers/likedItems.controller');
 
-router.post("/create/:id", likedItems.create);
+router.post('/create/:id', likedItems.create);
 
-router.put("/addpairs", likedItems.addPairs);
+router.put('/addpairs', likedItems.addPairs);
 
-router.get("/search/:id", likedItems.search);
+router.get('/search/:id', likedItems.search);
 
 module.exports = router;
