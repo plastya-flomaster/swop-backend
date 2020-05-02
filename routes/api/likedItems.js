@@ -1,12 +1,20 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-const likedItems = require("../../controllers/likedItems.controller");
+const likedItems = require('../../controllers/likedItems.controller');
 
-router.post("/create/:id", likedItems.create);
+//Создается объект для likeItems
+router.post('/create/:id', likedItems.create);
 
-router.put("/addpairs", likedItems.addPairs);
+//Добавление понравившейся вещи
+//Принимает
+//id = id пользователся,
+//otherId = id владельца понравившейся вещи,
+//itemId = id понравившейся вещи
+router.put('/addpairs', likedItems.addPairs);
 
-// router.get("/search/:id", likedItems.search);
+//Поиск совподений
+// Принимает userId = id пользователя
+router.get('/search/:id', likedItems.search);
 
 module.exports = router;
