@@ -24,4 +24,8 @@ router.post('/edit/:id', items.updateItem);
 //получаем все товары, на которые можно меняться
 router.get('/swap/:id', items.getItemsToSwap);
 
+//@route DELETE api/items/delete/:id
+//удаляет товары по айди
+router.delete('/delete/:id', items.delete);
+
 module.exports = router;
