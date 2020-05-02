@@ -30,7 +30,8 @@ exports.create = async (req, res) => {
 
 exports.addPairs = async (req, res) => {
   try {
-    const { id, otherId, itemId } = req.body;
+    const id = req.params.id;
+    const { otherId, itemId } = req.body;
 
     const LikedItemsCollection = await LikedItems.findOne({ userId: id });
 

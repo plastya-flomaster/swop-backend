@@ -8,12 +8,13 @@ const likedItems = require('../../controllers/likedItems.controller');
 router.post('/create/:id', likedItems.create);
 
 //Добавление понравившейся вещи
-//Принимает
+//params
 //id = id пользователся,
+//Принимает body
 //otherId = id владельца понравившейся вещи,
 //itemId = id понравившейся вещи
-// ../api/likeditems/addpairs
-router.put('/addpairs', likedItems.addPairs);
+// ../api/likeditems/addpairs/:id
+router.put('/addpairs/:id', likedItems.addPairs);
 
 //Поиск совподений
 // Принимает userId = id пользователя
