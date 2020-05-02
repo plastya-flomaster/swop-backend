@@ -1,5 +1,6 @@
 const Items = require('../Models/Items');
 const Category = require('../Models/Category');
+const LikedItems = require('../Models/LikedItems');
 const mongoose = require('mongoose');
 
 //создать запись в базе вместе с регистрацией юзера
@@ -97,8 +98,23 @@ exports.getItemsToSwap = (req, res) => {
         final.push(...itemsC.items);
       });
 
-      if (final) return res.status(200).send(final);
-      else return res.status(500).send('helo');
+      LikedItems.findOne({ userId }).then((likedItems) => {
+        Promise.all(
+          likedItems.disLike.map((disId) => {
+            final = final.filter((item) => String(item._id) !== disId);
+          })
+        ).then(() => {
+          let likes = [];
+          likedItems.pairs.map((pair) => {
+            likes = [...likes, ...pair.items];
+          });
+          Promise.all(
+            likes.map((like) => {
+              final = final.filter((item) => String(item._id) !== like);
+            })
+          ).then(() => res.status(200).send(final));
+        });
+      });
     })
     .catch((err) => {
       return res.status(500).send(err);

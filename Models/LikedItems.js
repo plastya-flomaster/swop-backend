@@ -9,6 +9,7 @@ const LikedItemSchema = new Schema({
 const LikedItemsCollectionSchema = new Schema({
   userId: { type: String, required: true },
   pairs: [LikedItemSchema],
+  disLike: [String],
 });
 
 const LikedItems = mongoose.model('LikedItems', LikedItemsCollectionSchema);

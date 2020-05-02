@@ -17,6 +17,7 @@ exports.create = async (req, res) => {
     const newLikedItemsCollection = new LikedItems({
       userId,
       pairs: [],
+      disLike: [],
     });
 
     await newLikedItemsCollection.save();
@@ -168,5 +169,29 @@ exports.search = async (req, res) => {
     return res.status(200).send(found);
   } catch (e) {
     res.status(500).send('Что то пошло не так');
+  }
+};
+
+exports.disLike = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { itemId } = req.body;
+
+    const LikedItemsCollection = await LikedItems.findOne({ userId: userId });
+
+    if (!LikedItemsCollection) {
+      return res.status(400).send('LikedItems не найден');
+    }
+
+    await LikedItems.updateOne(
+      { _id: LikedItemsCollection._id },
+      {
+        disLike: [...LikedItemsCollection.disLike, itemId],
+      }
+    );
+
+    return res.status(200).send('dilLike add');
+  } catch (e) {
+    res.status(500).send('Что-то пошло не так');
   }
 };

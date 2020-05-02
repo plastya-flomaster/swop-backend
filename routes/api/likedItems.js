@@ -17,4 +17,10 @@ router.put('/addpairs', likedItems.addPairs);
 // Принимает userId = id пользователя
 router.get('/search/:id', likedItems.search);
 
+//Добаление disLike
+//id = id пользователя
+//body:
+//itemId = id вещи
+router.put('/dislike/:id', likedItems.disLike);
+
 module.exports = router;
