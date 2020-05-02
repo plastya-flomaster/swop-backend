@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const LikedItemSchema = new Schema({
@@ -11,6 +11,6 @@ const LikedItemsCollectionSchema = new Schema({
   pairs: [LikedItemSchema],
 });
 
-const LikedItems = mongoose.model("LikedItems", LikedItemsCollectionSchema);
+const LikedItems = mongoose.model('LikedItems', LikedItemsCollectionSchema);
 
 module.exports = LikedItems;

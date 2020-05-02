@@ -27,31 +27,35 @@ exports.create = (req, res) => {
 
 //редактировать определенный товар
 exports.updateItem = (req, res) => {
+  if (!req.body) {
+    return res.status(500).send('Ошибка');
+  }
 
-    if (!req.body) {
-        return res.status(500).send('Ошибка');
+  const payload = req.body;
+  const query = {
+    userId: req.params.id,
+    'items._id': req.body._id,
+  };
+  Items.findOneAndUpdate(
+    query,
+    {
+      $set: { 'items.$': payload },
+    },
+    { new: true },
+    (err, doc) => {
+      if (doc) {
+        replaceCategory(doc.items)
+          .then((subDoc) => {
+            return res.status(200).send(subDoc);
+          })
+          .catch((err) => {
+            return res.status(500).send('Что-то пошло не ' + err);
+          });
+      }
+      if (err) return res.status(500).send('Невозможно обновить товар: ' + err);
     }
-
-    const payload = req.body;
-    const query = {
-        'userId': req.params.id,
-        'items._id': req.body._id
-    }
-    Items.findOneAndUpdate(query,
-        {
-            "$set":
-                { "items.$": payload }
-        }, { new: true },
-        (err, doc) => {
-            if (doc) {
-                replaceCategory(doc.items).then(subDoc => { return res.status(200).send(subDoc); }).catch(err => {
-                    return res.status(500).send('Что-то пошло не ' + err);
-                });
-            };
-            if (err) return res.status(500).send('Невозможно обновить товар: ' + err);
-        });
-}
-
+  );
+};
 
 //добавить новый товар в записи
 exports.createNewItem = (req, res) => {
@@ -109,32 +113,38 @@ exports.getItemsToSwap = (req, res) => {
 
 //найти товары юзера
 exports.getAllMine = (req, res) => {
-    const userId = req.params.id;
-    Items.findOne({ userId }).then(items => {
-        if (!items) {
-            return res.status(400).send('Ошибка пользователя нет в базе товаров!');
-        } else {
-            if (items.items) {
-                replaceCategory(items.items).then(
-                    subDoc => {
-                        return res.status(200).send(subDoc);
-                    }
-                );
-            }
-            else return res.status(400).send('Пока у вас нет товаров, чтобы обменяться! Добавьте новый товар!');
-        }
-    }).catch(err => { return res.status(500).send(err) });
-}
+  const userId = req.params.id;
+  Items.findOne({ userId })
+    .then((items) => {
+      if (!items) {
+        return res.status(400).send('Ошибка пользователя нет в базе товаров!');
+      } else {
+        if (items.items) {
+          replaceCategory(items.items).then((subDoc) => {
+            return res.status(200).send(subDoc);
+          });
+        } else
+          return res
+            .status(400)
+            .send(
+              'Пока у вас нет товаров, чтобы обменяться! Добавьте новый товар!'
+            );
+      }
+    })
+    .catch((err) => {
+      return res.status(500).send(err);
+    });
+};
 
 const replaceCategory = (subDoc) => {
-    
-    return Category.find().then(categories => {
-        subDoc.map(item => {
-            item.category = categories.find(category => category.id === item.category);
-                
-        });
-        return subDoc;
+  return Category.find().then((categories) => {
+    subDoc.map((item) => {
+      item.category = categories.find(
+        (category) => category.id === item.category
+      );
     });
+    return subDoc;
+  });
 };
 
 exports.getAllMineFinished = (req, res) => {};
