@@ -157,7 +157,7 @@ exports.search = async (req, res) => {
           );
 
           found.push({
-            id: userInfo,
+            userInfo,
             myItems: myItemsObj,
             yourItems: yourItemsObj,
           });
