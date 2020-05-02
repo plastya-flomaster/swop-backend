@@ -7,6 +7,6 @@ router.post("/create/:id", likedItems.create);
 
 router.put("/addpairs", likedItems.addPairs);
 
-router.get("/search/:id", likedItems.search);
+// router.get("/search/:id", likedItems.search);
 
 module.exports = router;

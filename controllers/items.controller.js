@@ -1,5 +1,5 @@
 const Items = require('../Models/Items');
-const Category = require('../Models/Items');
+const Category = require('../Models/Category');
 const mongoose = require('mongoose');
 
 //создать запись в базе вместе с регистрацией юзера
@@ -28,15 +28,23 @@ exports.updateItem = (req, res) => {
     const payload = req.body;
     const query = {
         'userId': req.params.id,
-        'items.item_id': req.body._id
+        'items._id': req.body._id
     }
-
-    Items.findOne(query).then(item => {
-        if (!item) return res.status(500).send('Невозможно обновить товар!');
-        return res.status(200).send(item);
-    }).catch(err => { return res.status(500).send('Ошибка: ' + err) });
-
+    Items.findOneAndUpdate(query,
+        {
+            "$set":
+                { "items.$": payload }
+        }, { new: true },
+        (err, doc) => {
+            if (doc) {
+                replaceCategory(doc.items).then(subDoc => { return res.status(200).send(subDoc); }).catch(err => {
+                    return res.status(500).send('Что-то пошло не ' + err);
+                });
+            };
+            if (err) return res.status(500).send('Невозможно обновить товар: ' + err);
+        });
 }
+
 
 //добавить новый товар в записи
 exports.createNewItem = (req, res) => {
@@ -44,8 +52,6 @@ exports.createNewItem = (req, res) => {
         _id: mongoose.Types.ObjectId(),
         ...req.body
     }
-    console.log(newItem);
-
     const update = {
         "$push": {
             "items": newItem
@@ -68,7 +74,6 @@ exports.createNewItem = (req, res) => {
 //получить все товары из бд, кроме товаров юзера, на которые можно поменяться
 exports.getItemsToSwap = (req, res) => {
     const userId = req.params.id;
-
     let final = [];
     Items.find().then(items => {
         if (!items) return res.status(400).send('Нет товаров!');
@@ -78,7 +83,7 @@ exports.getItemsToSwap = (req, res) => {
         })
 
         if (final) return res.status(200).send(final);
-        else return res.status(500).send('helo')
+        else return res.status(500).send('helo');
 
     }).catch(err => { return res.status(500).send(err) });
 }
@@ -91,21 +96,27 @@ exports.getAllMine = (req, res) => {
             return res.status(400).send('Ошибка пользователя нет в базе товаров!');
         } else {
             if (items.items) {
-                Category.find().then(categories => {
-                    console.log(categories[0]);
-
-                    items.items.map((item) => {
-                        item.category = categories.find((category) => category.id == Titem.category
-                        )
-                    })
-                })
-
-                return res.status(200).send(items)
+                replaceCategory(items.items).then(
+                    subDoc => {
+                        return res.status(200).send(subDoc);
+                    }
+                );
             }
             else return res.status(400).send('Пока у вас нет товаров, чтобы обменяться! Добавьте новый товар!');
         }
     }).catch(err => { return res.status(500).send(err) });
 }
+
+const replaceCategory = (subDoc) => {
+    
+    return Category.find().then(categories => {
+        subDoc.map(item => {
+            item.category = categories.find(category => category.id === item.category)
+                
+        });
+        return subDoc;
+    });
+};
 
 exports.getAllMineFinished = (req, res) => {
 

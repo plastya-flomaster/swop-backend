@@ -1,11 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const CategorySchema = new Schema({
-    _id: Schema.Types.ObjectId,
-    category: String
-});
-
 const ItemSchema = new Schema({
     _id: Schema.Types.ObjectId,
     title: String,
@@ -26,7 +21,5 @@ const ItemsSchema = new Schema({
     },
     items: [ ItemSchema ]
 });
-
-module.exports = Category = mongoose.model('category', CategorySchema);
 
 module.exports = Items = mongoose.model('items', ItemsSchema);
