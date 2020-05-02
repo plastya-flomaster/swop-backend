@@ -4,6 +4,7 @@ const CategorySchema = require('./Category');
 
 const ItemSchema = new Schema({
   _id: Schema.Types.ObjectId,
+  userId: Schema.Types.ObjectId,
   title: String,
   category: String | CategorySchema,
   description: String,

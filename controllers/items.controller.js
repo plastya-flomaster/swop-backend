@@ -9,7 +9,7 @@ exports.create = (req, res) => {
     if (item)
       return res
         .status(500)
-        .send('товары для такого пользователя уже обозначены');
+        .send(`Товары для пользователя ${userId} уже обозначены`);
   });
 
   const items = new Items({
@@ -28,7 +28,9 @@ exports.create = (req, res) => {
 //редактировать определенный товар
 exports.updateItem = (req, res) => {
   if (!req.body) {
-    return res.status(500).send('Ошибка');
+    return res
+      .status(500)
+      .send('Ошибка. Невозможно обновить товар, т.к. данных нет');
   }
 
   const payload = req.body;
@@ -43,17 +45,7 @@ exports.updateItem = (req, res) => {
     },
     { new: true },
     (err, doc) => {
-      if (doc) {
-        replaceCategory(doc.items)
-          .then((subDoc) => {
-            console.log(subDoc);
-
-            return res.status(200).send(subDoc);
-          })
-          .catch((err) => {
-            return res.status(500).send('Что-то пошло не так ' + err);
-          });
-      }
+      if (doc) return res.status(200).send(doc.items);
       if (err) return res.status(500).send('Невозможно обновить товар: ' + err);
     }
   );
@@ -63,9 +55,9 @@ exports.updateItem = (req, res) => {
 exports.createNewItem = (req, res) => {
   const newItem = {
     _id: mongoose.Types.ObjectId(),
+    userId: req.params.id,
     ...req.body,
   };
-  console.log(newItem);
 
   const update = {
     $push: {
@@ -82,7 +74,7 @@ exports.createNewItem = (req, res) => {
       if (!item)
         return res
           .status(404)
-          .send('невозможно добавить товар. пользователя нет!');
+          .send('Невозможно добавить товар. пользователя нет!');
       return res.status(200).send(item);
     })
     .catch((err) => {
@@ -122,9 +114,7 @@ exports.getAllMine = (req, res) => {
         return res.status(400).send('Ошибка пользователя нет в базе товаров!');
       } else {
         if (items.items) {
-          replaceCategory(items.items).then((subDoc) => {
-            return res.status(200).send(subDoc);
-          });
+          return res.status(200).send(items.items);
         } else
           return res
             .status(400)
@@ -138,25 +128,13 @@ exports.getAllMine = (req, res) => {
     });
 };
 
-const replaceCategory = (subDoc) => {
-  return Category.find().then((categories) => {
-    subDoc.map((item) => {
-      item.category = categories.find(
-        (category) => category.id === item.category
-      );
-    });
-    return subDoc;
-  });
-};
-
 exports.getAllMineFinished = (req, res) => {};
 
 exports.getAllMineFinished = (req, res) => {};
-// //обновить товар по айди
-// exports.update = (req, res) => {
-//     return res.status(200).send('deleted');
-// }
+
 //удалить товар по айди
-exports.delete = (req, res) => {};
+exports.delete = (req, res) => {
+  const userId = req.params.id;
+};
 //удалить все товары юзера
 exports.deleteAll = (req, res) => {};
