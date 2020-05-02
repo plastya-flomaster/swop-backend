@@ -1,6 +1,6 @@
 const LikedItems = require('../Models/LikedItems');
 const Items = require('../Models/Items');
-const itemsController = require('../controllers/items.controller');
+const User = require('../Models/User');
 const mongoose = require('mongoose');
 
 exports.create = async (req, res) => {
@@ -125,32 +125,45 @@ exports.search = async (req, res) => {
 
     const found = [];
 
-    pairs.map((pair) => {
-      const otherUser = otherLikedItems.find(
-        (likenItems) => likenItems.userId === pair.userId
-      );
-      if (otherUser) {
-        const myItems = otherUser.pairs.find((pair) => pair.userId === userId);
+    await Promise.all(
+      pairs.map(async (pair) => {
+        const otherUser = otherLikedItems.find(
+          (likenItems) => likenItems.userId === pair.userId
+        );
+        if (otherUser) {
+          const myItems = otherUser.pairs.find(
+            (pair) => pair.userId === userId
+          );
 
-        let myItemsObj = [];
-        myItems.items.map((itemId) => {
-          const itemObj = allItems.find((item) => String(item._id) === itemId);
-          if (itemObj) myItemsObj.push(itemObj);
-        });
+          let myItemsObj = [];
+          myItems.items.map((itemId) => {
+            const itemObj = allItems.find(
+              (item) => String(item._id) === itemId
+            );
+            if (itemObj) myItemsObj.push(itemObj);
+          });
 
-        yourItemsObj = [];
-        pair.items.map((itemId) => {
-          const itemObj = allItems.find((item) => String(item._id) === itemId);
-          if (itemObj) yourItemsObj.push(itemObj);
-        });
+          yourItemsObj = [];
+          pair.items.map((itemId) => {
+            const itemObj = allItems.find(
+              (item) => String(item._id) === itemId
+            );
+            if (itemObj) yourItemsObj.push(itemObj);
+          });
 
-        found.push({
-          id: otherUser.userId,
-          myItems: myItemsObj,
-          yourItems: yourItemsObj,
-        });
-      }
-    });
+          const userInfo = await User.findOne(
+            { _id: pair.userId },
+            { password: false, date: false, __v: false }
+          );
+
+          found.push({
+            id: userInfo,
+            myItems: myItemsObj,
+            yourItems: yourItemsObj,
+          });
+        }
+      })
+    );
 
     return res.status(200).send(found);
   } catch (e) {
