@@ -8,9 +8,10 @@ const validateRegisterInput = require('../validation/register');
 const validateLoginInput = require('../validation/login');
 const validateUserInfo = require('../validation/update');
 
-//loading user model
+//Загрузка моделей
 const User = require('../Models/User');
 const Items = require('../Models/Items');
+const LikedItems = require('../Models/LikedItems');
 
 exports.register = (req, res) => {
   //form validation
@@ -40,10 +41,11 @@ exports.register = (req, res) => {
                 userId: user._id,
                 items: [],
               });
-              items.save().catch((err) => {
-                return res.status(500).json(err);
+              items.save().catch((err) => res.status(500).send(err));
+
+              createLikedItems(user._id).then((liked) => {
+                if (liked) return res.status(200).json(user);
               });
-              return res.status(200).json(user);
             })
             .catch((err) => res.status(500).send(err));
         });
@@ -51,7 +53,20 @@ exports.register = (req, res) => {
     }
   });
 };
+const createLikedItems = (userId) => {
+  LikedItems.findOne({ userId })
+    .then((liked) => {
+      if (liked) return 'Случилось непоправимое! Такой юзер уже есть';
+    })
+    .catch((err) => err.toString());
 
+  const likedItems = new LikedItems({
+    userId,
+    pairs: [],
+    disLike: [],
+  });
+  return likedItems.save().catch((err) => res.status(500).send(err));
+};
 exports.login = (req, res) => {
   //form validation
   const { errors, isValid } = validateLoginInput(req.body);

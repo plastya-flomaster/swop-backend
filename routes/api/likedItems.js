@@ -8,9 +8,8 @@ const likedItems = require('../../controllers/likedItems.controller');
 router.post('/create/:id', likedItems.create);
 
 //Добавление понравившейся вещи
-//params
-//id = id пользователся,
-//Принимает body
+//Принимает
+//id = id пользователя,
 //otherId = id владельца понравившейся вещи,
 //itemId = id понравившейся вещи
 // ../api/likeditems/addpairs/:id
