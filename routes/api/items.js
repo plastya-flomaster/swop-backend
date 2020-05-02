@@ -3,7 +3,7 @@ const router = express.Router();
 
 const items = require('../../controllers/items.controller');
 
-//создаем нового 
+//создаем нового
 router.post('/:id', items.create);
 
 //@route GET api/items/:id

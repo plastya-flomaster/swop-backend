@@ -111,7 +111,7 @@ const replaceCategory = (subDoc) => {
     
     return Category.find().then(categories => {
         subDoc.map(item => {
-            item.category = categories.find(category => category.id === item.category)
+            item.category = categories.find(category => category.id === item.category);
                 
         });
         return subDoc;
