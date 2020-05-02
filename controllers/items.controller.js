@@ -2,6 +2,7 @@ const Items = require('../Models/Items');
 const Category = require('../Models/Category');
 const LikedItems = require('../Models/LikedItems');
 const mongoose = require('mongoose');
+const isEmpty = require('is-empty');
 
 //создать запись в базе вместе с регистрацией юзера
 exports.create = (req, res) => {
@@ -162,8 +163,8 @@ exports.delete = (req, res) => {
   };
 
   Items.findOneAndUpdate({ userId }, update, { new: true }, (err, doc) => {
-    console.log(update);
     if (err) return res.status(500).send(err);
+    if (isEmpty(doc)) return res.status(500).send('ничего не вышло!');
     return doc;
   })
     .then((items) => res.status(200).send(items.items))
