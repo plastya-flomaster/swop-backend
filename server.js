@@ -4,14 +4,14 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const cors = require('cors');
 
-const users = require("./routes/api/users");
-const items = require("./routes/api/items");
-const likedItems = require("./routes/api/likedItems");
-
+const users = require('./routes/api/users');
+const items = require('./routes/api/items');
+const likedItems = require('./routes/api/likedItems');
+const categories = require('./routes/api/categories');
 
 const app = express();
 
-const domain = "http://localhost:8080";
+const domain = 'http://localhost:8080';
 
 const corsOpts = {
   origin: domain,
@@ -27,19 +27,22 @@ app.use(
 );
 app.use(bodyParser.json());
 
-app.get("/", (req, res) => {
-  res.json({ message: "hello node its plastya" });
+app.get('/', (req, res) => {
+  res.json({ message: 'hello node its plastya' });
 });
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
   next();
 });
 
 //config for DB
-const db = require("./config/keys").mongoURI;
+const db = require('./config/keys').mongoURI;
 
 //db connection
 mongoose
@@ -48,9 +51,9 @@ mongoose
     useUnifiedTopology: true,
     useFindAndModify: false,
   })
-  .then(() => console.log("db is connected!"))
+  .then(() => console.log('db is connected!'))
   .catch((err) => {
-    console.log("cannot connect");
+    console.log('cannot connect');
     console.log(err);
     process.exit();
   });
@@ -59,12 +62,13 @@ mongoose
 app.use(passport.initialize());
 
 //passport config
-require("./config/passport")(passport);
+require('./config/passport')(passport);
 
 //routes
-app.use("/api/users", users);
-app.use("/api/items", items);
-app.use("/api/likeditems", likedItems);
+app.use('/api/users', users);
+app.use('/api/items', items);
+app.use('/api/likeditems', likedItems);
+app.use('/api/categories', categories);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

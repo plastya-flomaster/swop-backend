@@ -46,10 +46,12 @@ exports.updateItem = (req, res) => {
       if (doc) {
         replaceCategory(doc.items)
           .then((subDoc) => {
+            console.log(subDoc);
+
             return res.status(200).send(subDoc);
           })
           .catch((err) => {
-            return res.status(500).send('Что-то пошло не ' + err);
+            return res.status(500).send('Что-то пошло не так ' + err);
           });
       }
       if (err) return res.status(500).send('Невозможно обновить товар: ' + err);
