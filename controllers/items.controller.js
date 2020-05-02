@@ -76,7 +76,7 @@ exports.createNewItem = (req, res) => {
         return res
           .status(404)
           .send('Невозможно добавить товар. пользователя нет!');
-      return res.status(200).send(item);
+      return res.status(200).send(item.items);
     })
     .catch((err) => {
       return res.status(500).send('Ошибка: ' + err);
