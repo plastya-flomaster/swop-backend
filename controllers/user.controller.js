@@ -54,18 +54,28 @@ exports.register = (req, res) => {
   });
 };
 const createLikedItems = (userId) => {
-  LikedItems.findOne({ userId })
-    .then((liked) => {
-      if (liked) return 'Случилось непоправимое! Такой юзер уже есть';
-    })
-    .catch((err) => err.toString());
+  try {
+    const userId = req.params.id;
+    const collection = await LikedItems.findOne({ userId });
 
-  const likedItems = new LikedItems({
-    userId,
-    pairs: [],
-    disLike: [],
-  });
-  return likedItems.save().catch((err) => res.status(500).send(err));
+    if (collection) {
+      return res
+        .status(400)
+        .send('LikedItems для такого пользователя уже создан');
+    }
+
+    const newLikedItemsCollection = new LikedItems({
+      userId,
+      pairs: [],
+      disLike: [],
+    });
+
+    await newLikedItemsCollection.save();
+
+    return res.status(200).send(true);
+  } catch (e) {
+    res.status(500).send(false);
+  }
 };
 exports.login = (req, res) => {
   //form validation

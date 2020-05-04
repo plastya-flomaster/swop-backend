@@ -3,31 +3,6 @@ const Items = require('../Models/Items');
 const User = require('../Models/User');
 const mongoose = require('mongoose');
 
-exports.create = async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const collection = await LikedItems.findOne({ userId });
-
-    if (collection) {
-      return res
-        .status(400)
-        .send('LikedItems для такого пользователя уже создан');
-    }
-
-    const newLikedItemsCollection = new LikedItems({
-      userId,
-      pairs: [],
-      disLike: [],
-    });
-
-    await newLikedItemsCollection.save();
-
-    return res.status(200).send('likeditems создан');
-  } catch (e) {
-    res.status(500).send('Что-то пошло не так');
-  }
-};
-
 exports.addPairs = async (req, res) => {
   try {
     const id = req.params.id;
