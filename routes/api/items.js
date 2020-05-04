@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const uuidv4 = require('uuid').v4;
+const fs = require('fs');
+const path = require('path');
 
 const items = require('../../controllers/items.controller');
 
@@ -29,7 +31,7 @@ router.get('/swap/:id', items.getItemsToSwap);
 //upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = `./public/`;
+    const dir = `./public/${req.headers.userid}/${req.headers.itemid}`;
     cb(null, dir);
   },
   filename: (req, file, cb) => {
@@ -54,9 +56,25 @@ var upload = multer({
   },
 });
 
+//Очищает папку с изображениями
+const clearDir = (req, res, next) => {
+  const dir = `./public/${req.headers.userid}/${req.headers.itemid}`;
+  fs.readdir(dir, (err, files) => {
+    if (err) throw err;
+
+    for (const file of files) {
+      fs.unlink(path.join(dir, file), (err) => {
+        if (err) throw err;
+      });
+    }
+  });
+  next();
+};
+
 //@route POST api/items/upload-images
 router.post(
   '/upload-images/i',
+  clearDir,
   upload.array('imgCollection', 6),
   items.uploadPhotos
 );

@@ -3,6 +3,7 @@ const Category = require('../Models/Category');
 const LikedItems = require('../Models/LikedItems');
 const mongoose = require('mongoose');
 const fs = require('fs');
+const path = require('path');
 const isEmpty = require('is-empty');
 
 //создать запись в базе вместе с регистрацией юзера
@@ -78,6 +79,9 @@ exports.createNewItem = (req, res) => {
         return res
           .status(404)
           .send('Невозможно добавить товар. пользователя нет!');
+      fs.mkdirSync(
+        `./public/${item.userId}/${item.items[item.items.length - 1]._id}`
+      );
       return res.status(200).send(item.items);
     })
     .catch((err) => {
@@ -150,9 +154,9 @@ exports.uploadPhotos = (req, res) => {
   const userId = req.headers.userid;
   const itemId = req.headers.itemid;
   const reqFiles = [];
-  const url = 'http://localhost:5000';
+  const url = 'http://localhost:5000/public';
   req.files.map((file) => {
-    reqFiles.push(url + '/public/' + file.filename);
+    reqFiles.push(url + `/${userId}/${itemId}/` + file.filename);
   });
 
   Items.findOne({ userId }).then((itemCollection) => {

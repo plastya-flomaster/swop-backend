@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys = require('../config/keys');
 const mongoose = require('mongoose');
+const fs = require('fs');
 
 //load input validation
 const validateRegisterInput = require('../validation/register');
@@ -44,7 +45,10 @@ exports.register = (req, res) => {
               items.save().catch((err) => res.status(500).send(err));
 
               createLikedItems(user._id).then((liked) => {
-                if (liked) return res.status(200).json(user);
+                if (liked) {
+                  fs.mkdirSync(`./public/${user._id}/`);
+                  return res.status(200).json(user);
+                }
               });
             })
             .catch((err) => res.status(500).send(err));
@@ -166,6 +170,7 @@ exports.delete = (req, res) => {
         Items.findOneAndRemove({ userId: _id }).catch((err) =>
           res.status(500).send(err)
         );
+        fs.rmdir(`./public/${_id}`);
         return res.status(200).send('Удален!');
       }
     })
