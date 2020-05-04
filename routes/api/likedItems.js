@@ -3,7 +3,7 @@ const router = express.Router();
 
 const likedItems = require('../../controllers/likedItems.controller');
 
-//Создается объект для likeItems
+//Создается элемент коллекции для likedItems
 // ../api/likeditems/create/:id
 router.post('/create/:id', likedItems.create);
 
@@ -15,12 +15,12 @@ router.post('/create/:id', likedItems.create);
 // ../api/likeditems/addpairs/:id
 router.put('/addpairs/:id', likedItems.addPairs);
 
-//Поиск совподений
+//Поиск совпадений
 // Принимает userId = id пользователя
 // ../api/likeditems/search/:id
 router.get('/search/:id', likedItems.search);
 
-//Добаление disLike
+//Добвление disLike
 //id = id пользователя
 //body:
 //itemId = id вещи

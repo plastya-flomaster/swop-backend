@@ -115,7 +115,7 @@ exports.search = async (req, res) => {
     });
 
     if (!otherLikedItems) {
-      return res.status(400).send('У вас пока нет совподений');
+      return res.status(400).send('У вас пока нет совпадений');
     }
 
     let allItems = [];
@@ -169,7 +169,7 @@ exports.search = async (req, res) => {
 
     return res.status(200).send(found);
   } catch (e) {
-    res.status(500).send('Что то пошло не так');
+    res.status(500).send('Что-то пошло не так');
   }
 };
 
@@ -191,7 +191,7 @@ exports.disLike = async (req, res) => {
       }
     );
 
-    return res.status(200).send('dilLike add');
+    return res.status(200).send('disLike add');
   } catch (e) {
     res.status(500).send('Что-то пошло не так');
   }
