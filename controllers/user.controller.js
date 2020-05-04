@@ -170,7 +170,6 @@ exports.delete = (req, res) => {
         Items.findOneAndRemove({ userId: _id }).catch((err) =>
           res.status(500).send(err)
         );
-        fs.rmdir(`./public/${_id}`);
         return res.status(200).send('Удален!');
       }
     })
