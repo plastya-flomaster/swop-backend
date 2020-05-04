@@ -2,6 +2,7 @@ const Items = require('../Models/Items');
 const Category = require('../Models/Category');
 const LikedItems = require('../Models/LikedItems');
 const mongoose = require('mongoose');
+const fs = require('fs');
 
 //создать запись в базе вместе с регистрацией юзера
 exports.create = (req, res) => {
@@ -142,6 +143,44 @@ exports.getAllMine = (req, res) => {
     .catch((err) => {
       return res.status(500).send(err);
     });
+};
+
+exports.uploadPhotos = (req, res) => {
+  const userId = req.headers.userid;
+  const itemId = req.headers.itemid;
+  const reqFiles = [];
+  const url = 'http://localhost:5000';
+  req.files.map((file) => {
+    reqFiles.push(url + '/public/' + file.filename);
+  });
+
+  Items.findOne({ userId }).then((itemCollection) => {
+    const arrItem = itemCollection.items.filter(
+      (item) => String(item._id) === itemId
+    );
+
+    let item = arrItem[0];
+    item.photos = [...reqFiles];
+
+    const payload = item;
+    const query = {
+      userId,
+      'items._id': itemId,
+    };
+
+    Items.findOneAndUpdate(
+      query,
+      {
+        $set: { 'items.$': payload },
+      },
+      { new: true },
+      (err, doc) => {
+        if (doc) return res.status(200).send(doc.items);
+        if (err)
+          return res.status(500).send('Невозможно обновить товар: ' + err);
+      }
+    );
+  });
 };
 
 exports.getAllMineFinished = (req, res) => {};

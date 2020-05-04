@@ -27,6 +27,8 @@ app.use(
 );
 app.use(bodyParser.json());
 
+app.use('/public', express.static('public'));
+
 app.get('/', (req, res) => {
   res.json({ message: 'hello node its plastya' });
 });
