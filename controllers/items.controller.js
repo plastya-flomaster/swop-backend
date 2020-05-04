@@ -3,6 +3,7 @@ const Category = require('../Models/Category');
 const LikedItems = require('../Models/LikedItems');
 const mongoose = require('mongoose');
 const fs = require('fs');
+const isEmpty = require('is-empty');
 
 //создать запись в базе вместе с регистрацией юзера
 exports.create = (req, res) => {
@@ -190,6 +191,23 @@ exports.getAllMineFinished = (req, res) => {};
 //удалить товар по айди
 exports.delete = (req, res) => {
   const userId = req.params.id;
+  const _id = req.body.itemId;
+
+  const update = {
+    $pull: {
+      items: {
+        _id,
+      },
+    },
+  };
+
+  Items.findOneAndUpdate({ userId }, update, { new: true }, (err, doc) => {
+    if (err) return res.status(500).send(err);
+    if (isEmpty(doc)) return res.status(500).send('ничего не вышло!');
+    return doc;
+  })
+    .then((items) => res.status(200).send(items.items))
+    .catch((err) => res.status(500).send(err));
 };
 //удалить все товары юзера
 exports.deleteAll = (req, res) => {};

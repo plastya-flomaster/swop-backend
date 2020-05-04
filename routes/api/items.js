@@ -60,5 +60,8 @@ router.post(
   upload.array('imgCollection', 6),
   items.uploadPhotos
 );
+//@route DELETE api/items/delete/:id
+//удаляет товары по айди
+router.delete('/delete/:id', items.delete);
 
 module.exports = router;
