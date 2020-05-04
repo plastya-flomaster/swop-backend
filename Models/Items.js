@@ -13,11 +13,7 @@ const ItemSchema = new Schema({
       tag: String,
     },
   ],
-  photos: [
-    {
-      url: String,
-    },
-  ],
+  photos: [String],
 });
 
 const ItemsSchema = new Schema({
