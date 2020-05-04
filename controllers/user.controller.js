@@ -55,7 +55,6 @@ exports.register = (req, res) => {
 };
 const createLikedItems = async (userId) => {
   try {
-    const userId = req.params.id;
     const collection = await LikedItems.findOne({ userId });
 
     if (collection) {
@@ -72,9 +71,9 @@ const createLikedItems = async (userId) => {
 
     await newLikedItemsCollection.save();
 
-    return res.status(200).send(true);
+    return true;
   } catch (e) {
-    res.status(500).send(false);
+    return false;
   }
 };
 exports.login = (req, res) => {
