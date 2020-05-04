@@ -3,10 +3,6 @@ const router = express.Router();
 
 const likedItems = require('../../controllers/likedItems.controller');
 
-//Создается элемент коллекции для likedItems
-// ../api/likeditems/create/:id
-router.post('/create/:id', likedItems.create);
-
 //Добавление понравившейся вещи
 //Принимает
 //id = id пользователя,

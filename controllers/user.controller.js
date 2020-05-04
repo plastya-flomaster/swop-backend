@@ -53,7 +53,7 @@ exports.register = (req, res) => {
     }
   });
 };
-const createLikedItems = (userId) => {
+const createLikedItems = async (userId) => {
   try {
     const userId = req.params.id;
     const collection = await LikedItems.findOne({ userId });
