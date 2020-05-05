@@ -56,25 +56,10 @@ var upload = multer({
   },
 });
 
-//Очищает папку с изображениями
-const clearDir = (req, res, next) => {
-  const dir = `./public/${req.headers.userid}/${req.headers.itemid}`;
-  fs.readdir(dir, (err, files) => {
-    if (err) throw err;
-
-    for (const file of files) {
-      fs.unlink(path.join(dir, file), (err) => {
-        if (err) throw err;
-      });
-    }
-  });
-  next();
-};
-
 //@route POST api/items/upload-images
 router.post(
   '/upload-images/i',
-  clearDir,
+  items.clearDir,
   upload.array('imgCollection', 6),
   items.uploadPhotos
 );

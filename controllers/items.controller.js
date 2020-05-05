@@ -149,6 +149,28 @@ exports.getAllMine = (req, res) => {
       return res.status(500).send(err);
     });
 };
+//Очищает папку с изображениями
+exports.clearDir = (req, res, next) => {
+  const dir = `./public/${req.headers.userid}/${req.headers.itemid}`;
+
+  Items.findOne({ userId: req.headers.userid }).then((itemC) => {
+    const item = itemC.items.find((item) => item._id == req.headers.itemid);
+    fs.readdir(dir, (err, files) => {
+      if (err) throw err;
+
+      for (const file of files) {
+        item.photos.map((url) => {
+          if (!url.includes(file)) {
+            fs.unlink(path.join(dir, file), (err) => {
+              if (err) throw err;
+            });
+          }
+        });
+      }
+    });
+    next();
+  });
+};
 
 exports.uploadPhotos = (req, res) => {
   const userId = req.headers.userid;
@@ -165,7 +187,7 @@ exports.uploadPhotos = (req, res) => {
     );
 
     let item = arrItem[0];
-    item.photos = [...reqFiles];
+    item.photos = [...item.photos, ...reqFiles];
 
     const payload = item;
     const query = {
