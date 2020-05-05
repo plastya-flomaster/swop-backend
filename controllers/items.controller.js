@@ -3,6 +3,7 @@ const Category = require('../Models/Category');
 const LikedItems = require('../Models/LikedItems');
 const mongoose = require('mongoose');
 const fs = require('fs');
+const rimraf = require('rimraf');
 const path = require('path');
 const isEmpty = require('is-empty');
 
@@ -187,7 +188,7 @@ exports.uploadPhotos = (req, res) => {
     );
 
     let item = arrItem[0];
-    item.photos = [...item.photos, ...reqFiles];
+    item.photos = [...reqFiles, ...item.photos];
 
     const payload = item;
     const query = {
@@ -232,7 +233,10 @@ exports.delete = (req, res) => {
     if (isEmpty(doc)) return res.status(500).send('ничего не вышло!');
     return doc;
   })
-    .then((items) => res.status(200).send(items.items))
+    .then((items) => {
+      rimraf(`public/${userId}/${_id}`, () => console.log('Папка удалена'));
+      return res.status(200).send(items.items);
+    })
     .catch((err) => res.status(500).send(err));
 };
 //удалить все товары юзера

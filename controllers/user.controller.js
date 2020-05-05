@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const keys = require('../config/keys');
 const mongoose = require('mongoose');
 const fs = require('fs');
+const rimraf = require('rimraf');
 
 //load input validation
 const validateRegisterInput = require('../validation/register');
@@ -170,6 +171,7 @@ exports.delete = (req, res) => {
         Items.findOneAndRemove({ userId: _id }).catch((err) =>
           res.status(500).send(err)
         );
+        rimraf(`public/${_id}`, () => console.log('Папка удалена'));
         return res.status(200).send('Удален!');
       }
     })
