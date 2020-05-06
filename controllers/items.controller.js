@@ -213,8 +213,6 @@ exports.uploadPhotos = (req, res) => {
 
 exports.getAllMineFinished = (req, res) => {};
 
-exports.getAllMineFinished = (req, res) => {};
-
 //удалить товар по айди
 exports.delete = (req, res) => {
   const userId = req.params.id;
@@ -235,9 +233,17 @@ exports.delete = (req, res) => {
   })
     .then((items) => {
       rimraf(`public/${userId}/${_id}`, () => console.log('Папка удалена'));
-      return res.status(200).send(items.items);
+      return res.send(200, items.items);
     })
     .catch((err) => res.status(500).send(err));
 };
 //удалить все товары юзера
-exports.deleteAll = (req, res) => {};
+exports.deleteCollection = (req, res, next) => {
+  const userId = req.params.id;
+  Items.findOneAndRemove({ userId })
+    .then((res) => {
+      console.log(`Коллекция товаров пользователя ${userId} удалена`);
+      return next();
+    })
+    .catch((err) => res.status(500).send(err));
+};

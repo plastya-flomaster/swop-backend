@@ -161,19 +161,16 @@ exports.update = (req, res) => {
     .catch((err) => res.status(500).send(err));
 };
 
-exports.delete = (req, res) => {
+exports.delete = (req, res, next) => {
   const _id = mongoose.Types.ObjectId(req.params.id);
   User.findByIdAndDelete(_id)
     .then((user) => {
       if (!user)
         return res.status(404).send(`Пользователя с id ${_id} не найдено`);
-      else {
-        Items.findOneAndRemove({ userId: _id }).catch((err) =>
-          res.status(500).send(err)
-        );
-        rimraf(`public/${_id}`, () => console.log('Папка удалена'));
-        return res.status(200).send('Удален!');
-      }
+      rimraf(`public/${_id}`, () =>
+        console.log(`Папка с изображениями товаров пользователя ${_id} удалена`)
+      );
+      next();
     })
     .catch((err) => res.status(500).send(err));
 };

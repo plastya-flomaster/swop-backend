@@ -171,3 +171,19 @@ exports.disLike = async (req, res) => {
     res.status(500).send('Что-то пошло не так');
   }
 };
+exports.deleteCollection = (req, res) => {
+  const userId = req.params.id;
+  LikedItems.findOneAndRemove({ userId })
+    .then((res) => {
+      if (!res) {
+        console.log(
+          'Для этого пользователя уже не существует коллекции likedItems'
+        );
+      }
+      console.log(
+        `Коллекция понравившихся товаров пользователя ${userId} удалена`
+      );
+      return res.send(204, `Пользователь ${userId} успешно удален`);
+    })
+    .catch((err) => res.status(500).send(err));
+};

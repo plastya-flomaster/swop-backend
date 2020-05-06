@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 const user = require('../../controllers/user.controller');
+const items = require('../../controllers/items.controller');
+const likedItems = require('../../controllers/likedItems.controller');
 
 //@route POST api/users/register
 //@desc Register user
@@ -27,6 +29,11 @@ router.get('/:id', user.getInfo);
 //@route GET api/users/:id
 //@desc Удаляет пользователя по айди
 //@access Public
-router.delete('/:id', user.delete);
+router.delete(
+  '/:id',
+  user.delete,
+  items.deleteCollection,
+  likedItems.deleteCollection
+);
 
 module.exports = router;
