@@ -14,7 +14,7 @@ router.put('/addpairs/:id', likedItems.addPairs);
 //Поиск совпадений
 // Принимает userId = id пользователя
 // ../api/likeditems/search/:id
-router.get('/search/:id', likedItems.search);
+router.get('/searchpairs/:id', likedItems.searchPairs);
 
 //Добвление disLike
 //id = id пользователя

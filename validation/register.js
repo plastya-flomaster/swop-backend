@@ -12,7 +12,7 @@ module.exports = validateRegisterInput = (data) => {
 
   let errors = {};
 
-  //convert empty fields to an empty strings
+  //convert empty fields to an empty string
   data.name = checkField(data.name);
   data.email = checkField(data.email);
   data.password = checkField(data.password);

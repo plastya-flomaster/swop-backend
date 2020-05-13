@@ -1,7 +1,6 @@
 const LikedItems = require('../Models/LikedItems');
 const Items = require('../Models/Items');
 const User = require('../Models/User');
-const mongoose = require('mongoose');
 
 exports.addPairs = async (req, res) => {
   try {
@@ -70,7 +69,7 @@ exports.addPairs = async (req, res) => {
   }
 };
 
-exports.search = async (req, res) => {
+exports.searchPairs = async (req, res) => {
   try {
     const userId = req.params.id;
     const LikedItemsCollection = await LikedItems.findOne({ userId });
@@ -120,12 +119,12 @@ exports.search = async (req, res) => {
             if (itemObj) myItemsObj.push(itemObj);
           });
 
-          yourItemsObj = [];
+          otherItemsObj = [];
           pair.items.map((itemId) => {
             const itemObj = allItems.find(
               (item) => String(item._id) === itemId
             );
-            if (itemObj) yourItemsObj.push(itemObj);
+            if (itemObj) otherItemsObj.push(itemObj);
           });
 
           const userInfo = await User.findOne(
@@ -136,7 +135,7 @@ exports.search = async (req, res) => {
           found.push({
             userInfo,
             myItems: myItemsObj,
-            yourItems: yourItemsObj,
+            otherItems: otherItemsObj,
           });
         }
       })

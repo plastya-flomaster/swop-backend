@@ -6,6 +6,7 @@ const fs = require('fs');
 const rimraf = require('rimraf');
 const path = require('path');
 const isEmpty = require('is-empty');
+const domain = require('../config/utils');
 
 //создать запись в базе вместе с регистрацией юзера
 exports.create = (req, res) => {
@@ -128,7 +129,7 @@ exports.getItemsToSwap = (req, res) => {
     });
 };
 
-//найти товары юзера
+//найти товары пользователя
 exports.getAllMine = (req, res) => {
   const userId = req.params.id;
   Items.findOne({ userId })
@@ -177,7 +178,7 @@ exports.uploadPhotos = (req, res) => {
   const userId = req.headers.userid;
   const itemId = req.headers.itemid;
   const reqFiles = [];
-  const url = 'http://localhost:5000/public';
+  const url = `${domain}/public`;
   req.files.map((file) => {
     reqFiles.push(url + `/${userId}/${itemId}/` + file.filename);
   });
@@ -211,8 +212,6 @@ exports.uploadPhotos = (req, res) => {
   });
 };
 
-exports.getAllMineFinished = (req, res) => {};
-
 //удалить товар по айди
 exports.delete = (req, res) => {
   const userId = req.params.id;
@@ -233,7 +232,7 @@ exports.delete = (req, res) => {
   })
     .then((items) => {
       rimraf(`public/${userId}/${_id}`, () => console.log('Папка удалена'));
-      return res.send(200, items.items);
+      return res.status(200).send(items.items);
     })
     .catch((err) => res.status(500).send(err));
 };

@@ -5,6 +5,9 @@ const user = require('../../controllers/user.controller');
 const items = require('../../controllers/items.controller');
 const likedItems = require('../../controllers/likedItems.controller');
 
+const multer = require('multer');
+const uuidv4 = require('uuid').v4;
+
 //@route POST api/users/register
 //@desc Register user
 //@access Public
@@ -18,8 +21,45 @@ router.post('/login', user.login);
 //@route PUT api/users/:id/update
 //@desc Обновляет переданные поля для пользователя
 //@access Public
-//пример запроса: api/users/5e9dabcdc84d114cece8c39d/update?name=Настя&contacts[phone]=+79223260399&contacts[instagram]=@plastya
 router.put('/:id/update', user.update);
+
+//upload
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = `./public/${req.params.id}/avatar`;
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(' ').join('-');
+    cb(null, uuidv4() + '-' + fileName);
+  },
+});
+
+var upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype == 'image/png' ||
+      file.mimetype == 'image/jpg' ||
+      file.mimetype == 'image/jpeg'
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Только .png, .jpg и .jpeg форматы!'));
+    }
+  },
+});
+
+//@route PUT api/users/avatar/:id
+//@desc загружает аватар пользователя
+//@access Public
+router.put(
+  '/avatar/:id',
+  user.clearDirectory,
+  upload.single('user-avatar'),
+  user.uploadAvatar
+);
 
 //@route GET api/users/:id
 //@desc Получает данные пользователя по айди

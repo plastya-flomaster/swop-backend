@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const uuidv4 = require('uuid').v4;
-const fs = require('fs');
-const path = require('path');
 
 const items = require('../../controllers/items.controller');
 
@@ -11,7 +9,7 @@ const items = require('../../controllers/items.controller');
 router.post('/:id', items.create);
 
 //@route GET api/items/:id
-//@desc получаем все товары юзера
+//@desc получаем все товары пользователя
 //@access Public
 router.get('/:id', items.getAllMine);
 
@@ -51,18 +49,20 @@ var upload = multer({
       cb(null, true);
     } else {
       cb(null, false);
-      return cb(new Error('ТОлько .png, .jpg and .jpeg форрматы!'));
+      return cb(new Error('Только .png, .jpg и .jpeg форрматы!'));
     }
   },
 });
 
 //@route POST api/items/upload-images
+//сохраняет изображения товара
 router.post(
   '/upload-images/i',
   items.clearDir,
   upload.array('imgCollection', 6),
   items.uploadPhotos
 );
+
 //@route DELETE api/items/delete/:id
 //удаляет товары по айди
 router.delete('/delete/:id', items.delete);

@@ -3,9 +3,10 @@ const jwt = require('jsonwebtoken');
 const keys = require('../config/keys');
 const mongoose = require('mongoose');
 const fs = require('fs');
+const path = require('path');
 const rimraf = require('rimraf');
 
-//load input validation
+//Валидации
 const validateRegisterInput = require('../validation/register');
 const validateLoginInput = require('../validation/login');
 const validateUserInfo = require('../validation/update');
@@ -15,8 +16,10 @@ const User = require('../Models/User');
 const Items = require('../Models/Items');
 const LikedItems = require('../Models/LikedItems');
 
+const domain = require('../config/utils');
+
 exports.register = (req, res) => {
-  //form validation
+  //валидация формы регистрации
   const { errors, isValid } = validateRegisterInput(req.body);
 
   if (!isValid) {
@@ -39,6 +42,11 @@ exports.register = (req, res) => {
           newUser
             .save()
             .then((user) => {
+              fs.mkdir(`./public/${user._id}`, () => {
+                fs.mkdir(`./public/${user._id}/avatar`, () => {
+                  console.log('папка создана');
+                });
+              });
               const items = new Items({
                 userId: user._id,
                 items: [],
@@ -47,8 +55,7 @@ exports.register = (req, res) => {
 
               createLikedItems(user._id).then((liked) => {
                 if (liked) {
-                  fs.mkdirSync(`./public/${user._id}/`);
-                  return res.status(200).json(user);
+                  return res.status(200).send('Регистрация прошла успешно');
                 }
               });
             })
@@ -77,7 +84,7 @@ const createLikedItems = async (userId) => {
     await newLikedItemsCollection.save();
 
     return true;
-  } catch (e) {
+  } catch (event) {
     return false;
   }
 };
@@ -107,7 +114,7 @@ exports.login = (req, res) => {
           payload,
           keys.secretOrKey,
           {
-            expiresIn: 31556926, //lasts 1 year
+            expiresIn: 31556926, // 1 год
           },
           (err, token) => {
             res.json({
@@ -127,11 +134,6 @@ exports.login = (req, res) => {
 //получаю информацию о пользвателе
 exports.getInfo = (req, res) => {
   const _id = req.params.id;
-  // try {
-  //     _id = mongoose.Types.ObjectId(req.params.id);
-  // } catch (err) {
-  //     return res.status(500).send('Неверный формат id');
-  // }
 
   User.findOne({ _id })
     .then((user) => {
@@ -173,4 +175,33 @@ exports.delete = (req, res, next) => {
       next();
     })
     .catch((err) => res.status(500).send(err));
+};
+
+exports.uploadAvatar = (req, res) => {
+  const _id = req.params.id;
+  const url = `${domain}/public/${_id}/avatar/${req.file.filename}`;
+
+  User.findOneAndUpdate(
+    { _id },
+    { avatar: url },
+    { new: true },
+    (err, user) => {
+      if (user) return res.status(200).send(user);
+      if (err) return res.status(500).send('Невозможно загрузить фото: ' + err);
+    }
+  );
+};
+exports.clearDirectory = (req, res, next) => {
+  const _id = req.params.id;
+  const dir = `./public/${_id}/avatar`;
+
+  fs.readdir(dir, (err, files) => {
+    if (err) throw err;
+    for (const file of files) {
+      fs.unlink(path.join(dir, file), (err) => {
+        if (err) throw err;
+      });
+    }
+    next();
+  });
 };

@@ -34,8 +34,6 @@ app.get('/', (req, res) => {
 });
 
 app.use(function (req, res, next) {
-  //res.header('Access-Control-Allow-Origin', '*');
-  // res.header('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT');
   res.header(
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept, Authorization'
@@ -43,19 +41,19 @@ app.use(function (req, res, next) {
   next();
 });
 
-//config for DB
+//конфиг DB
 const db = require('./config/keys').mongoURI;
 
-//db connection
+//db подключение
 mongoose
   .connect(db, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
   })
-  .then(() => console.log('db is connected!'))
+  .then(() => console.log('Подключено к базе!'))
   .catch((err) => {
-    console.log('cannot connect');
+    console.log('Подключение невозможно');
     console.log(err);
     process.exit();
   });
@@ -74,5 +72,5 @@ app.use('/api/categories', categories);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
-  console.log(`server is running on port ${port}`);
+  console.log(`сервер запущен на порту ${port}`);
 });
