@@ -7,6 +7,7 @@ const rimraf = require('rimraf');
 const path = require('path');
 const isEmpty = require('is-empty');
 const domain = require('../config/utils');
+const validateItem = require('../validation/item');
 
 //создать запись в базе вместе с регистрацией юзера
 exports.create = (req, res) => {
@@ -59,6 +60,13 @@ exports.updateItem = (req, res) => {
 
 //добавить новый товар в записи
 exports.createNewItem = (req, res) => {
+  //validation
+  const { errors, isValid } = validateItem(req.body);
+
+  if (!isValid) {
+    return res.status(400).send(errors);
+  }
+
   const newItem = {
     _id: mongoose.Types.ObjectId(),
     userId: req.params.id,
